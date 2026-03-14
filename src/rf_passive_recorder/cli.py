@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +25,13 @@ def run(config: str | None = typer.Option(None, "--config"), api_only: bool = Fa
     if api_only:
         uvicorn.run(create_api(service), host=settings.api.host, port=settings.api.port)
     else:
+        if settings.api.enabled:
+            threading.Thread(
+                target=uvicorn.run,
+                args=(create_api(service),),
+                kwargs={"host": settings.api.host, "port": settings.api.port},
+                daemon=True,
+            ).start()
         service.run()
 
 

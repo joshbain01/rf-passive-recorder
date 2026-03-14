@@ -106,6 +106,24 @@ Overload thresholds:
 - GPIO unavailable: safe when `gpio.enabled: false`.
 - Artifact/export failures are logged; event processing continues.
 
+
+## Docker Compose deployment (Raspberry Pi)
+For a clean and reversible deployment, use Docker Compose instead of a host Python install.
+
+```bash
+./setup_rfpr_docker.sh
+cd /opt/rf-passive-recorder
+docker compose up -d
+```
+
+The Compose stack uses RTL-SDR USB mapping without `privileged`:
+- `devices: /dev/bus/usb:/dev/bus/usb`
+- `group_add: plugdev`
+
+Config is persisted at `/opt/rf-passive-recorder/config/settings.yaml` and data at `/opt/rf-passive-recorder/data`.
+
+Full runbook: `docs/docker-deployment.md`.
+
 ## systemd
 ```bash
 sudo cp systemd/rf-passive-recorder.service /etc/systemd/system/
