@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rf-passive-recorder"
+version = "0.1.0"
+description = "Passive RF nuisance-event recorder and clustering daemon for RTL-SDR"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{name = "rf-passive-recorder"}]
+dependencies = [
+  "pyrtlsdr",
+  "numpy",
+  "scipy",
+  "pydantic>=2",
+  "typer>=0.12",
+  "PyYAML",
+  "Pillow",
+  "fastapi",
+  "uvicorn",
+  "requests",
+  "gpiozero",
+]
+
+[project.scripts]
+rfpr = "rf_passive_recorder.cli:app"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

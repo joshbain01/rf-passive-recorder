@@ -1,0 +1,12 @@
+pyrtlsdr
+numpy
+scipy
+pydantic>=2
+typer>=0.12
+PyYAML
+Pillow
+fastapi
+uvicorn
+requests
+gpiozero
+pytest
