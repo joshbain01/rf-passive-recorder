@@ -6,7 +6,7 @@ services:
     image: rf-passive-recorder:local
     container_name: rf-passive-recorder
     restart: unless-stopped
-    user: "${RFPR_UID:-1000}:${RFPR_GID:-1000}"
+    user: "0:0"
     group_add:
       - "plugdev"
     devices:

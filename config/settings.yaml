@@ -1,0 +1,50 @@
+app:
+  name: rf-passive-recorder
+  data_dir: /data
+  log_level: INFO
+rtl:
+  device_index: 0
+  sample_rate_sps: 2048000
+  center_freq_mhz: 915.2
+  gain_mode: manual
+  gain_db: 38.6
+  agc_enabled: false
+  ppm_correction: 0.0
+capture:
+  pre_trigger_ms: 5000
+  post_trigger_ms: 5000
+  chunk_size: 262144
+  ring_buffer_ms: 15000
+  fft_size: 2048
+  fft_hop: 512
+  window_type: hann
+detection:
+  psd_active_threshold_db: 8.0
+  min_burst_ms: 4.0
+  merge_gap_ms: 8.0
+  min_snr_db: 3.0
+clustering:
+  enabled: true
+  distance_threshold: 0.18
+  max_exemplars: 200
+artifacts:
+  enabled: true
+  width: 512
+  height: 256
+gpio:
+  enabled: false
+  button_bcm_pin: 17
+  debounce_ms: 300
+api:
+  enabled: true
+  host: 0.0.0.0
+  port: 8787
+  auth_token: null
+export:
+  enabled: true
+  mode: filesystem
+  outbox_dir: null
+  http_url: null
+  http_timeout_sec: 10.0
+  http_auth_header: null
+  retry_backoff_sec: 30
