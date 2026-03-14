@@ -1,24 +1,32 @@
 FROM python:3.11-slim-bookworm
 
+ARG RTLSDR_GIT_REF=v2.0.2
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1
 
 WORKDIR /app
 
-# Include minimal runtime + conservative build tooling for arm wheel fallback.
+# Include minimal runtime + build tooling for arm wheel fallback and librtlsdr.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
+        cmake \
         gfortran \
+        git \
         pkg-config \
         libopenblas-dev \
-        librtlsdr0 \
-        librtlsdr-dev \
         libusb-1.0-0 \
         libusb-1.0-0-dev \
         ca-certificates \
         curl \
+    && git clone --branch "${RTLSDR_GIT_REF}" --depth 1 https://github.com/osmocom/rtl-sdr.git /tmp/rtl-sdr \
+    && cmake -S /tmp/rtl-sdr -B /tmp/rtl-sdr/build -DDETACH_KERNEL_DRIVER=ON \
+    && cmake --build /tmp/rtl-sdr/build --parallel "$(nproc)" \
+    && cmake --install /tmp/rtl-sdr/build \
+    && ldconfig \
+    && rm -rf /tmp/rtl-sdr \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml README.md /app/
