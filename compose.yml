@@ -1,0 +1,25 @@
+services:
+  rf-passive-recorder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rf-passive-recorder:local
+    container_name: rf-passive-recorder
+    restart: unless-stopped
+    user: "${RFPR_UID:-1000}:${RFPR_GID:-1000}"
+    group_add:
+      - "plugdev"
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    volumes:
+      - ./config:/config:rw
+      - ./data:/data:rw
+    command: ["run", "--config", "/config/settings.yaml"]
+    ports:
+      - "${RFPR_API_BIND:-127.0.0.1}:${RFPR_API_PORT:-8787}:8787"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8787/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
