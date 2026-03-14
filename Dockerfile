@@ -5,7 +5,8 @@ ARG PYRTLSDR_VERSION=0.3.0
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    PIP_CONSTRAINT=/app/constraints.txt
 
 WORKDIR /app
 
@@ -33,12 +34,13 @@ RUN apt-get update \
     && rm -rf /tmp/rtl-sdr \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml README.md /app/
+COPY pyproject.toml README.md requirements.txt constraints.txt /app/
 COPY src /app/src
 
 RUN pip install --upgrade pip \
-    && pip install "pyrtlsdr==${PYRTLSDR_VERSION}" \
-    && pip install . \
+    && pip install -r requirements.txt \
+    && pip install --no-deps . \
+    && python -m pip show pyrtlsdr | grep -q "Version: ${PYRTLSDR_VERSION}" \
     && python -c "import importlib.metadata as m; import rtlsdr; assert m.version('pyrtlsdr') == '${PYRTLSDR_VERSION}'; print(rtlsdr.__file__)"
 
 RUN groupadd -f plugdev && useradd --create-home --shell /usr/sbin/nologin rfpr
