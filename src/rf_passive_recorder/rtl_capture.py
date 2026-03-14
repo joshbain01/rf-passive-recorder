@@ -30,7 +30,12 @@ class RTLCapture:
         self.sdr = RtlSdr(self.settings.rtl.device_index)
         self.sdr.sample_rate = self.settings.rtl.sample_rate_sps
         self.sdr.center_freq = self.settings.rtl.center_freq_mhz * 1e6
-        self.sdr.freq_correction = int(self.settings.rtl.ppm_correction)
+        ppm_correction = int(self.settings.rtl.ppm_correction)
+        if ppm_correction != 0:
+            try:
+                self.sdr.freq_correction = ppm_correction
+            except Exception as exc:
+                LOGGER.warning("Failed to set RTL-SDR ppm correction to %d: %s", ppm_correction, exc)
         self.sdr.gain = "auto" if self.settings.rtl.gain_mode == "auto" else self.settings.rtl.gain_db
         self.running = True
         LOGGER.info("RTL-SDR initialized")

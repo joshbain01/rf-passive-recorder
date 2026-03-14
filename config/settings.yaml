@@ -9,7 +9,7 @@ rtl:
   gain_mode: manual
   gain_db: 38.6
   agc_enabled: false
-  ppm_correction: 0.0
+  ppm_correction: 0.0  # 0 disables correction; non-zero values are applied when supported by the SDR
 capture:
   pre_trigger_ms: 5000
   post_trigger_ms: 5000
