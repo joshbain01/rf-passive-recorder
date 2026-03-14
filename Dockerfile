@@ -1,6 +1,6 @@
 FROM python:3.11-slim-bookworm
 
-ARG RTLSDR_GIT_REF=v2.0.2
+ARG RTLSDR_GIT_REF=master
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -15,6 +15,7 @@ RUN apt-get update \
         cmake \
         gfortran \
         git \
+        binutils \
         pkg-config \
         libopenblas-dev \
         libusb-1.0-0 \
@@ -26,6 +27,7 @@ RUN apt-get update \
     && cmake --build /tmp/rtl-sdr/build --parallel "$(nproc)" \
     && cmake --install /tmp/rtl-sdr/build \
     && ldconfig \
+    && nm -D /usr/local/lib/librtlsdr.so | grep -q 'rtlsdr_set_dithering' \
     && rm -rf /tmp/rtl-sdr \
     && rm -rf /var/lib/apt/lists/*
 
@@ -33,7 +35,8 @@ COPY pyproject.toml README.md /app/
 COPY src /app/src
 
 RUN pip install --upgrade pip \
-    && pip install .
+    && pip install . \
+    && python -c "import rtlsdr; print(rtlsdr.__file__)"
 
 RUN groupadd -f plugdev && useradd --create-home --shell /usr/sbin/nologin rfpr
 
